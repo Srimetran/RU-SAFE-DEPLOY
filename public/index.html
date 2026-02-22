@@ -64,12 +64,22 @@
       min-width: 190px;
       flex: 0 0 auto;
     }
+
+    /* ✅ RU-safe logo */
     .logo{
-      width: 34px; height: 34px; border-radius: 10px;
-      background: radial-gradient(circle at 30% 30%, rgba(68,194,255,.95), rgba(255,204,51,.65), rgba(255,51,68,.45));
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
       border: 1px solid rgba(255,255,255,.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
       flex: 0 0 auto;
+      background: rgba(255,255,255,.04);
     }
+    .logo svg{ display:block; }
+
     .brand h1{ font-size: 14px; margin: 0; line-height: 1.1; letter-spacing: .4px; }
     .brand .sub{ font-size: 12px; color: var(--muted); margin-top: 2px; }
 
@@ -491,7 +501,23 @@
 
   <div class="topbar">
     <div class="brand">
-      <div class="logo"></div>
+      <!-- ✅ RU-safe inline SVG logo -->
+      <div class="logo" aria-label="RU-safe logo">
+        <svg viewBox="0 0 64 64" width="34" height="34" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="rgba(68,194,255,1)"/>
+              <stop offset="0.55" stop-color="rgba(255,204,51,1)"/>
+              <stop offset="1" stop-color="rgba(255,51,68,1)"/>
+            </linearGradient>
+          </defs>
+          <path d="M32 6c8 7 16 9 22 10v18c0 14-9 22-22 26C19 56 10 48 10 34V16c6-1 14-3 22-10Z"
+                fill="url(#g)" stroke="rgba(255,255,255,.35)" stroke-width="2" />
+          <text x="32" y="40" text-anchor="middle" font-size="20" font-weight="800"
+                fill="rgba(10,12,16,.90)" font-family="system-ui, -apple-system, Segoe UI, Roboto">RU</text>
+        </svg>
+      </div>
+
       <div style="min-width:0">
         <h1>RU-safe</h1>
         <div class="sub">Rutgers crime heat bubbles</div>
@@ -703,14 +729,17 @@ function sevLabel(sev){
   if (s >= 3) return "Medium";
   return "Low";
 }
+
+/* ✅ smaller circles */
 function sevRadiusMeters(sev){
   const s = Number(sev);
-  if (s >= 5) return 60;
-  if (s >= 4) return 50;
-  if (s >= 3) return 40;
-  if (s >= 2) return 32;
-  return 26;
+  if (s >= 5) return 42;
+  if (s >= 4) return 36;
+  if (s >= 3) return 30;
+  if (s >= 2) return 24;
+  return 20;
 }
+
 function parseTime(value){
   if (value === null || value === undefined) return null;
   if (value instanceof Date && !isNaN(value.getTime())) return value;
@@ -1046,7 +1075,7 @@ function render(){
     if (!perfDisableRings){
       const speedMetersPerMin = 12;
       const growthMinutes = Math.min(minutesOld, MAX_GROWTH_MINUTES);
-      const extra = Math.min(140, growthMinutes * speedMetersPerMin);
+      const extra = Math.min(120, growthMinutes * speedMetersPerMin); // slightly reduced
       const gradientRadius = radius + extra;
       addEscapeGradient(inc.latitude, inc.longitude, color, gradientRadius);
     }
@@ -1085,20 +1114,25 @@ function render(){
 
     circle.addTo(bubbleLayer);
 
+    /* ✅ CENTER DOT properly centered + not oversized */
     if (!perfDisablePulse){
+      const basePx = 10 + (Number(inc.severity) * 2);
+      const size = Math.max(10, Math.min(20, basePx));
+
       const pulse = L.marker([inc.latitude, inc.longitude], {
         icon: L.divIcon({
           className: "crimeBubble",
           html: `<div style="
-            width:${Math.max(14, 10 + inc.severity*3)}px;
-            height:${Math.max(14, 10 + inc.severity*3)}px;
+            width:${size}px;
+            height:${size}px;
             background:${color};
             opacity:${Math.min(1, 0.70 * fade + 0.15)};
             color:${color};
             border:1px solid rgba(255,255,255,.22);
             border-radius:999px;
           "></div>`,
-          iconSize: [1,1]
+          iconSize: [size, size],
+          iconAnchor: [size/2, size/2]
         }),
         interactive: false
       });
@@ -1245,38 +1279,53 @@ range14.addEventListener("click", () => setActiveRangeButton(14));
 range30.addEventListener("click", () => setActiveRangeButton(30));
 overviewMinSev.addEventListener("change", renderOverview);
 
-// ---------- 3-point drag sheet ----------
-let sheetSnap = { collapsed: 0, mid: 0, expanded: 0 };
-let sheetState = "collapsed";
+// ---------- 2-state drag sheet (OPEN / CLOSED) ----------
+let sheetSnap = { open: 0, closed: 0 };
+let sheetState = "closed";
 let drag = { startY: null, startOffset: 0, currentOffset: 0 };
 
 function computeSheetSnap(){
   const h = sheet.getBoundingClientRect().height;
-  const expanded = 0;
-  const mid = Math.max(0, h * 0.45);
-  const collapsed = Math.max(0, h - 70);
-  sheetSnap = { expanded, mid, collapsed };
+  const headerH = sheetHeader.getBoundingClientRect().height || 78;
+
+  const open = 0;
+
+  // closed shows header only (plus a tiny peek)
+  const peek = Math.max(62, Math.min(78, headerH));
+  const closed = Math.max(0, h - peek);
+
+  sheetSnap = { open, closed };
   setSheetState(sheetState, false);
 }
+
 function setSheetOffset(px, animate=true){
   drag.currentOffset = px;
   sheet.style.setProperty("--sheetY", `${px}px`);
-  sheet.style.transition = animate ? "transform .25s ease" : "none";
+  sheet.style.transition = animate ? "transform .22s ease" : "none";
 }
+
 function setSheetState(state, animate=true){
   sheetState = state;
-  if (state === "expanded") setSheetOffset(sheetSnap.expanded, animate);
-  else if (state === "mid") setSheetOffset(sheetSnap.mid, animate);
-  else setSheetOffset(sheetSnap.collapsed, animate);
-  setTimeout(() => map.invalidateSize(), 260);
+  setSheetOffset(state === "open" ? sheetSnap.open : sheetSnap.closed, animate);
+  setTimeout(() => map.invalidateSize(), 240);
+}
+
+function toggleSheet(){
+  setSheetState(sheetState === "closed" ? "open" : "closed");
 }
 
 window.addEventListener("load", () => {
   computeSheetSnap();
-  setSheetState("collapsed");
+  setSheetState("closed");
 });
-window.addEventListener("resize", () => { computeSheetSnap(); render(); renderOverview(); });
 
+window.addEventListener("resize", () => {
+  computeSheetSnap();
+  render();
+  renderOverview();
+});
+
+// Drag behavior (snaps to nearest of OPEN/CLOSED)
 sheetHeader.addEventListener("pointerdown", (e) => {
   computeSheetSnap();
   drag.startY = e.clientY;
@@ -1284,32 +1333,27 @@ sheetHeader.addEventListener("pointerdown", (e) => {
   sheet.style.transition = "none";
   sheetHeader.setPointerCapture(e.pointerId);
 });
+
 sheetHeader.addEventListener("pointermove", (e) => {
   if (drag.startY === null) return;
   const dy = e.clientY - drag.startY;
-  const next = Math.min(sheetSnap.collapsed, Math.max(sheetSnap.expanded, drag.startOffset + dy));
+  const next = Math.min(sheetSnap.closed, Math.max(sheetSnap.open, drag.startOffset + dy));
   setSheetOffset(next, false);
 });
+
 sheetHeader.addEventListener("pointerup", () => {
   if (drag.startY === null) return;
   drag.startY = null;
 
+  // snap to nearest of the two
   const cur = drag.currentOffset;
-  const options = [
-    { name: "expanded", val: sheetSnap.expanded },
-    { name: "mid", val: sheetSnap.mid },
-    { name: "collapsed", val: sheetSnap.collapsed }
-  ];
-  options.sort((a,b) => Math.abs(cur - a.val) - Math.abs(cur - a.val));
-  setSheetState(options[0].name);
+  const distToOpen = Math.abs(cur - sheetSnap.open);
+  const distToClosed = Math.abs(cur - sheetSnap.closed);
+  setSheetState(distToOpen <= distToClosed ? "open" : "closed");
 });
 
-// Panel toggle button
-toggleSheetBtn.addEventListener("click", () => {
-  if (sheetState === "collapsed") setSheetState("mid");
-  else if (sheetState === "mid") setSheetState("expanded");
-  else setSheetState("collapsed");
-});
+// Panel toggle button: ONLY open/closed
+toggleSheetBtn.addEventListener("click", toggleSheet);
 
 // ---------- Buttons ----------
 refreshBtn.addEventListener("click", fetchIncidents);
