@@ -71,14 +71,19 @@
       height: 34px;
       border-radius: 10px;
       border: 1px solid rgba(255,255,255,.18);
+      overflow:hidden;
+      flex: 0 0 auto;
+      background: rgba(0,0,0,.18);
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden;
-      flex: 0 0 auto;
-      background: rgba(255,255,255,.04);
     }
-    .logo svg{ display:block; }
+    .logo img{
+      width: 100%;
+      height: 100%;
+      display:block;
+      object-fit: cover;
+    }
 
     /* CAPS */
     .brand h1{
@@ -448,6 +453,7 @@
       gap: 8px;
       font-weight: 700;
       font-size: 13px;
+      text-transform: none;
     }
     .sevPill{
       display:inline-flex;
@@ -514,20 +520,12 @@
 
   <div class="topbar">
     <div class="brand">
+      <!-- Replaced the old SVG (so nothing is “stuck behind” it) -->
       <div class="logo" aria-label="RU-SAFE logo">
-        <svg viewBox="0 0 64 64" width="34" height="34" role="img" aria-hidden="true">
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="rgba(68,194,255,1)"/>
-              <stop offset="0.55" stop-color="rgba(255,204,51,1)"/>
-              <stop offset="1" stop-color="rgba(255,51,68,1)"/>
-            </linearGradient>
-          </defs>
-          <path d="M32 6c8 7 16 9 22 10v18c0 14-9 22-22 26C19 56 10 48 10 34V16c6-1 14-3 22-10Z"
-                fill="url(#g)" stroke="rgba(255,255,255,.35)" stroke-width="2" />
-          <text x="32" y="40" text-anchor="middle" font-size="20" font-weight="800"
-                fill="rgba(10,12,16,.90)" font-family="system-ui, -apple-system, Segoe UI, Roboto">RU</text>
-        </svg>
+        <img
+          alt="RU-SAFE"
+          src="data:image/png;base64,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"
+        />
       </div>
 
       <div style="min-width:0">
@@ -550,7 +548,7 @@
         Rutgers
       </button>
 
-      <button class="btn" id="overviewBtn" title="Event overview">
+      <button class="btn" id="overviewBtn" title="Event Overview">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
                 stroke="currentColor"
@@ -560,7 +558,7 @@
         Overview
       </button>
 
-      <button class="btn" id="toggleSheetBtn" title="Toggle controls panel">
+      <button class="btn" id="toggleSheetBtn" title="Toggle Controls Panel">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -571,16 +569,16 @@
 
   <!-- Overview Drawer -->
   <div class="drawerOverlay" id="drawerOverlay" aria-hidden="true"></div>
-  <aside class="drawer" id="drawer" aria-label="Event overview drawer">
+  <aside class="drawer" id="drawer" aria-label="Event Overview Drawer">
     <div class="drawerHeader">
       <div class="drawerTitle">
         <b>Event Overview</b>
-        <span id="drawerSub">Past 7 days • 0 incidents</span>
+        <span id="drawerSub">Past 7 Days • 0 Incidents</span>
       </div>
 
       <div style="display:flex; gap:8px; align-items:center;">
         <span class="kbdHint">Esc</span>
-        <button class="btn" id="drawerCloseBtn" title="Close overview">
+        <button class="btn" id="drawerCloseBtn" title="Close Overview">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
@@ -591,18 +589,18 @@
 
     <div class="drawerBody">
       <div class="drawerControls">
-        <div class="seg" aria-label="Time range">
-          <button id="range7" class="active" type="button">7d</button>
-          <button id="range14" type="button">14d</button>
-          <button id="range30" type="button">30d</button>
+        <div class="seg" aria-label="Time Range">
+          <button id="range7" class="active" type="button">7D</button>
+          <button id="range14" type="button">14D</button>
+          <button id="range30" type="button">30D</button>
         </div>
 
-        <select id="overviewMinSev" title="Minimum severity for overview" style="min-width: 170px;">
-          <option value="1" selected>Min severity: 1+</option>
-          <option value="2">Min severity: 2+</option>
-          <option value="3">Min severity: 3+</option>
-          <option value="4">Min severity: 4+</option>
-          <option value="5">Min severity: 5</option>
+        <select id="overviewMinSev" title="Minimum Severity for Overview" style="min-width: 190px;">
+          <option value="1" selected>Min Severity: 1+</option>
+          <option value="2">Min Severity: 2+</option>
+          <option value="3">Min Severity: 3+</option>
+          <option value="4">Min Severity: 4+</option>
+          <option value="5">Min Severity: 5</option>
         </select>
       </div>
 
@@ -616,11 +614,11 @@
       <div style="flex:1;">
         <div class="grab"></div>
         <div class="sheetTitle">
-          <b>Live controls</b>
-          <span><span id="countText">0</span> incidents • Updated <span id="updatedText">—</span></span>
+          <b>Live Controls</b>
+          <span><span id="countText">0</span> Incidents • Updated <span id="updatedText">—</span></span>
         </div>
       </div>
-      <button class="btn" id="refreshBtn" title="Refresh now">
+      <button class="btn" id="refreshBtn" title="Refresh Now">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -631,15 +629,15 @@
     <div class="sheetBody">
       <div class="row">
         <div class="control">
-          <select id="minSeverity" title="Minimum severity">
-            <option value="1" selected>Min severity: 1+</option>
-            <option value="2">Min severity: 2+</option>
-            <option value="3">Min severity: 3+</option>
-            <option value="4">Min severity: 4+</option>
-            <option value="5">Min severity: 5</option>
+          <select id="minSeverity" title="Minimum Severity">
+            <option value="1" selected>Min Severity: 1+</option>
+            <option value="2">Min Severity: 2+</option>
+            <option value="3">Min Severity: 3+</option>
+            <option value="4">Min Severity: 4+</option>
+            <option value="5">Min Severity: 5</option>
           </select>
 
-          <input id="minutesWindow" type="number" min="15" step="15" value="240" title="Show incidents from last N minutes" inputmode="numeric" />
+          <input id="minutesWindow" type="number" min="15" step="15" value="240" title="Show Incidents from Last N Minutes" inputmode="numeric" />
         </div>
       </div>
 
@@ -651,8 +649,8 @@
       </div>
 
       <div class="tip">
-        Data source: <b>/api/incidents</b> (server proxy → Google Sheets).<br/>
-        Headers must be: <b>severity, crime_type, location, time, description, latitude, longitude</b>
+        Data Source: <b>/api/incidents</b> (Server Proxy → Google Sheets).<br/>
+        Headers Must Be: <b>severity, crime_type, location, time, description, latitude, longitude</b>
       </div>
 
       <div class="sectionTitle">Safety Route</div>
@@ -668,19 +666,19 @@
 
       <div class="row" style="justify-content:flex-start;">
         <div class="control">
-          <select id="riskDays" title="How far back to consider incidents for risk" style="min-width: 170px;">
-            <option value="1">Risk window: 1 day</option>
-            <option value="3">Risk window: 3 days</option>
-            <option value="7" selected>Risk window: 7 days</option>
-            <option value="14">Risk window: 14 days</option>
+          <select id="riskDays" title="How far back to consider incidents for risk" style="min-width: 190px;">
+            <option value="1">Risk Window: 1 Day</option>
+            <option value="3">Risk Window: 3 Days</option>
+            <option value="7" selected>Risk Window: 7 Days</option>
+            <option value="14">Risk Window: 14 Days</option>
           </select>
 
-          <select id="riskMinSev" title="Minimum severity for risk scoring" style="min-width: 180px;">
-            <option value="1">Risk min severity: 1+</option>
-            <option value="2">Risk min severity: 2+</option>
-            <option value="3" selected>Risk min severity: 3+</option>
-            <option value="4">Risk min severity: 4+</option>
-            <option value="5">Risk min severity: 5</option>
+          <select id="riskMinSev" title="Minimum severity for risk scoring" style="min-width: 210px;">
+            <option value="1">Risk Min Severity: 1+</option>
+            <option value="2">Risk Min Severity: 2+</option>
+            <option value="3" selected>Risk Min Severity: 3+</option>
+            <option value="4">Risk Min Severity: 4+</option>
+            <option value="5">Risk Min Severity: 5</option>
           </select>
         </div>
       </div>
@@ -744,6 +742,25 @@ function sevLabel(sev){
   if (s >= 3) return "Medium";
   return "Low";
 }
+
+// Capitalize “appropriate things” (only auto-title-case if the text is all-lowercase)
+function smartTitleCase(input){
+  const s = String(input ?? "").trim();
+  if (!s) return "";
+  const hasLetters = /[a-zA-Z]/.test(s);
+  const isAllLower = hasLetters && s === s.toLowerCase();
+
+  if (!isAllLower) return s;
+
+  return s
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w)
+    .join(" ");
+}
+function displayCrimeType(s){ return smartTitleCase(s || "Incident"); }
+function displayLocation(s){ return smartTitleCase(s || "Unknown Location"); }
 
 // Smaller circles so they fit better
 function sevRadiusMeters(sev){
@@ -937,13 +954,13 @@ function showToast(inc){
   div.innerHTML = `
     <div class="toastDot" style="background:${color}"></div>
     <div style="flex:1;">
-      <div class="toastTitle">NEW: ${escapeHtml(inc.crime_type || "Incident")} (Severity ${inc.severity}/5)</div>
+      <div class="toastTitle">New: ${escapeHtml(displayCrimeType(inc.crime_type))} (Severity ${inc.severity}/5)</div>
       <div class="toastMeta">
-        ${escapeHtml(inc.location || "Unknown location")}<br/>
+        ${escapeHtml(displayLocation(inc.location))}<br/>
         ${escapeHtml(String(inc.time || ""))}
       </div>
       <div class="toastActions">
-        <button class="toastBtn" data-action="view">View on map</button>
+        <button class="toastBtn" data-action="view">View On Map</button>
         <button class="toastBtn" data-action="dismiss">Dismiss</button>
       </div>
     </div>
@@ -1103,12 +1120,12 @@ function render(){
       <div style="min-width:260px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
           <div style="width:10px;height:10px;border-radius:999px;background:${color};box-shadow:0 0 0 4px rgba(255,255,255,.06)"></div>
-          <b style="font-size:14px">${escapeHtml(inc.crime_type)}</b>
+          <b style="font-size:14px">${escapeHtml(displayCrimeType(inc.crime_type))}</b>
         </div>
 
         <div style="font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.86)">
           <div><b>Severity:</b> ${inc.severity}/5</div>
-          <div><b>Location:</b> ${escapeHtml(inc.location || "—")}</div>
+          <div><b>Location:</b> ${escapeHtml(displayLocation(inc.location) || "—")}</div>
           <div><b>Time:</b> ${when} (${ago})</div>
 
           <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12)">
@@ -1192,13 +1209,13 @@ function renderOverview(){
     .filter(x => x.severity >= minSev)
     .sort((a,b) => b.date - a.date);
 
-  drawerSub.textContent = `Past ${overviewDays} days • ${list.length} incidents`;
+  drawerSub.textContent = `Past ${overviewDays} Days • ${list.length} Incidents`;
 
   if (list.length === 0){
     overviewList.innerHTML = `
       <div class="eventCard">
         <div class="eventDesc">No incidents match your filters for the past ${overviewDays} days.</div>
-        <div class="eventMeta">Try lowering “Min severity” or switching to 14d/30d.</div>
+        <div class="eventMeta">Try lowering “Min Severity” or switching to 14D/30D.</div>
       </div>
     `;
     return;
@@ -1225,11 +1242,11 @@ function renderOverview(){
         <div>
           <div class="eventType">
             <span style="width:10px;height:10px;border-radius:999px;background:${color};box-shadow:0 0 0 4px rgba(255,255,255,.06);display:inline-block;"></span>
-            ${escapeHtml(inc.crime_type || "Incident")}
+            ${escapeHtml(displayCrimeType(inc.crime_type))}
           </div>
           <div class="eventMeta">
             <div><b>Time:</b> ${escapeHtml(when)}</div>
-            <div><b>Location:</b> ${escapeHtml(inc.location || "—")}</div>
+            <div><b>Location:</b> ${escapeHtml(displayLocation(inc.location) || "—")}</div>
           </div>
         </div>
 
@@ -1243,7 +1260,7 @@ function renderOverview(){
 
       <div class="eventActions">
         <button class="toastBtn" data-act="jump">Jump</button>
-        <button class="toastBtn" data-act="open">Open popup</button>
+        <button class="toastBtn" data-act="open">Open Popup</button>
       </div>
     `;
 
@@ -1431,10 +1448,10 @@ function zoomToRoute(idx){
 }
 
 function riskBadge(risk){
-  if (risk < 20) return { label: "Low risk", color: "rgba(68,194,255,.90)" };
-  if (risk < 45) return { label: "Medium risk", color: "rgba(255,204,51,.90)" };
-  if (risk < 80) return { label: "High risk", color: "rgba(255,122,24,.92)" };
-  return { label: "Very high", color: "rgba(255,51,68,.92)" };
+  if (risk < 20) return { label: "Low Risk", color: "rgba(68,194,255,.90)" };
+  if (risk < 45) return { label: "Medium Risk", color: "rgba(255,204,51,.90)" };
+  if (risk < 80) return { label: "High Risk", color: "rgba(255,122,24,.92)" };
+  return { label: "Very High", color: "rgba(255,51,68,.92)" };
 }
 
 function filteredIncidentsForRisk(){
@@ -1514,7 +1531,7 @@ function renderRouteResults(){
           </div>
           <div class="routeMeta">
             <div><b>ETA:</b> ${escapeHtml(fmtDuration(r.duration))} • <b>Distance:</b> ${escapeHtml(fmtDistance(r.distance))}</div>
-            <div><b>Risk score:</b> ${escapeHtml(String(r.risk))} <span style="color:${badge.color}">(${escapeHtml(badge.label)})</span></div>
+            <div><b>Risk Score:</b> ${escapeHtml(String(r.risk))} <span style="color:${badge.color}">(${escapeHtml(badge.label)})</span></div>
           </div>
         </div>
         <div class="pillSmall">${isSel ? "Selected" : "Select"}</div>
@@ -1590,10 +1607,10 @@ async function computeRoutes(){
     renderRouteResults();
     zoomToRoute(selectedRouteIndex);
 
-    routeHint.innerHTML = `Showing <b>${currentRoutes.length}</b> routes. Risk uses last <b>${escapeHtml(riskDaysSel.value)}</b> days (min severity <b>${escapeHtml(riskMinSevSel.value)}</b>).`;
+    routeHint.innerHTML = `Showing <b>${currentRoutes.length}</b> routes. Risk uses last <b>${escapeHtml(riskDaysSel.value)}</b> days (Min Severity <b>${escapeHtml(riskMinSevSel.value)}</b>).`;
   }catch(err){
     console.error(err);
-    routeHint.innerHTML = `<span style="color:rgba(255,204,51,.92)"><b>Routing failed:</b> ${escapeHtml(err.message || "Unknown error")}</span>`;
+    routeHint.innerHTML = `<span style="color:rgba(255,204,51,.92)"><b>Routing Failed:</b> ${escapeHtml(err.message || "Unknown error")}</span>`;
   }finally{
     computeRouteBtn.classList.remove("active");
     computeRouteBtn.textContent = "Compute Routes";
