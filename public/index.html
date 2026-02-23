@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c10" />
-  <title>RU-safe</title>
+  <title>RU-SAFE</title>
 
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -80,8 +80,21 @@
     }
     .logo svg{ display:block; }
 
-    .brand h1{ font-size: 14px; margin: 0; line-height: 1.1; letter-spacing: .4px; }
-    .brand .sub{ font-size: 12px; color: var(--muted); margin-top: 2px; }
+    /* ✅ CAPS */
+    .brand h1{
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.1;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+    }
+    .brand .sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: .55px;
+    }
 
     .pill{
       display:flex; align-items:center; gap:8px;
@@ -501,8 +514,8 @@
 
   <div class="topbar">
     <div class="brand">
-      <!-- ✅ RU-safe inline SVG logo -->
-      <div class="logo" aria-label="RU-safe logo">
+      <!-- ✅ RU-SAFE inline SVG logo -->
+      <div class="logo" aria-label="RU-SAFE logo">
         <svg viewBox="0 0 64 64" width="34" height="34" role="img" aria-hidden="true">
           <defs>
             <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
@@ -519,8 +532,8 @@
       </div>
 
       <div style="min-width:0">
-        <h1>RU-safe</h1>
-        <div class="sub">Rutgers crime heat bubbles</div>
+        <h1>RU-SAFE</h1>
+        <div class="sub">CRIME HEAT BUBBLES</div>
       </div>
     </div>
 
@@ -530,12 +543,12 @@
     </div>
 
     <div class="pill" style="margin-left:auto; gap:8px;">
-      <button class="btn" id="recenterBtn" title="Recenter to Rutgers">
+      <button class="btn" id="recenterBtn" title="Recenter">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M12 2v3m0 14v3M2 12h3m14 0h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z" stroke="currentColor" stroke-width="2"/>
         </svg>
-        Rutgers
+        Recenter
       </button>
 
       <button class="btn" id="overviewBtn" title="Event overview">
@@ -686,8 +699,12 @@
 
 <script>
 /********************************************************************
- * RU-safe — Backend proxy (/api/incidents) → Leaflet bubbles + alerts
+ * RU-SAFE — Backend proxy (/api/incidents) → Leaflet bubbles + alerts
  * + Overview + Safety Route mode (OSRM) with ETA + risk scoring
+ *
+ * ✅ NOT RESTRICTED TO RUTGERS:
+ * - No max bounds
+ * - Optional URL start: ?lat=40.50&lng=-74.44&z=14
  ********************************************************************/
 
 // ✅ Frontend should ONLY talk to your backend:
@@ -697,16 +714,23 @@ const REFRESH_MS = 15000;
 // Routing (public demo OSRM)
 const OSRM_BASE = "https://router.project-osrm.org/route/v1/foot";
 
-const RUTGERS_CENTER = [40.5009, -74.4474];
-const RUTGERS_ZOOM = 14;
 const MAX_GROWTH_MINUTES = 30;
 
-const RUTGERS_BOUNDS = {
-  minLat: 40.47,
-  maxLat: 40.535,
-  minLng: -74.48,
-  maxLng: -74.40
-};
+// ---------- Map defaults (NOT Rutgers-only) ----------
+const DEFAULT_CENTER = [39.5, -98.35]; // USA-ish center
+const DEFAULT_ZOOM = 4;
+
+// Optional: allow passing center/zoom via URL like:
+// ?lat=40.50&lng=-74.44&z=14
+function getUrlNumber(key){
+  const v = new URLSearchParams(location.search).get(key);
+  if (v === null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+const startLat = getUrlNumber("lat");
+const startLng = getUrlNumber("lng");
+const startZ   = getUrlNumber("z");
 
 // ---------- helpers ----------
 function getCss(varName){ return getComputedStyle(document.documentElement).getPropertyValue(varName).trim(); }
@@ -730,7 +754,7 @@ function sevLabel(sev){
   return "Low";
 }
 
-/* ✅ smaller circles */
+// ✅ smaller circles so they fit better
 function sevRadiusMeters(sev){
   const s = Number(sev);
   if (s >= 5) return 42;
@@ -886,20 +910,16 @@ const riskMinSevSel = document.getElementById("riskMinSev");
 const routeHint = document.getElementById("routeHint");
 const routeResults = document.getElementById("routeResults");
 
-// ---------- Map ----------
-const map = L.map("map", { zoomControl: true }).setView(RUTGERS_CENTER, RUTGERS_ZOOM);
+// ---------- Map (NOT restricted) ----------
+const initialCenter =
+  (startLat !== null && startLng !== null) ? [startLat, startLng] : DEFAULT_CENTER;
+const initialZoom = (startZ !== null) ? startZ : DEFAULT_ZOOM;
+
+const map = L.map("map", { zoomControl: true }).setView(initialCenter, initialZoom);
 L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
   attribution: '&copy; OpenStreetMap &copy; CARTO',
   maxZoom: 20
 }).addTo(map);
-
-const campusBounds = L.latLngBounds(
-  [RUTGERS_BOUNDS.minLat, RUTGERS_BOUNDS.minLng],
-  [RUTGERS_BOUNDS.maxLat, RUTGERS_BOUNDS.maxLng]
-);
-map.setMaxBounds(campusBounds);
-map.fitBounds(campusBounds);
-map.setMinZoom(13);
 
 bubbleLayer = L.layerGroup().addTo(map);
 
@@ -1075,7 +1095,7 @@ function render(){
     if (!perfDisableRings){
       const speedMetersPerMin = 12;
       const growthMinutes = Math.min(minutesOld, MAX_GROWTH_MINUTES);
-      const extra = Math.min(120, growthMinutes * speedMetersPerMin); // slightly reduced
+      const extra = Math.min(120, growthMinutes * speedMetersPerMin);
       const gradientRadius = radius + extra;
       addEscapeGradient(inc.latitude, inc.longitude, color, gradientRadius);
     }
@@ -1114,7 +1134,7 @@ function render(){
 
     circle.addTo(bubbleLayer);
 
-    /* ✅ CENTER DOT properly centered + not oversized */
+    // ✅ CENTER DOT centered correctly (iconAnchor)
     if (!perfDisablePulse){
       const basePx = 10 + (Number(inc.severity) * 2);
       const size = Math.max(10, Math.min(20, basePx));
@@ -1289,8 +1309,6 @@ function computeSheetSnap(){
   const headerH = sheetHeader.getBoundingClientRect().height || 78;
 
   const open = 0;
-
-  // closed shows header only (plus a tiny peek)
   const peek = Math.max(62, Math.min(78, headerH));
   const closed = Math.max(0, h - peek);
 
@@ -1345,7 +1363,6 @@ sheetHeader.addEventListener("pointerup", () => {
   if (drag.startY === null) return;
   drag.startY = null;
 
-  // snap to nearest of the two
   const cur = drag.currentOffset;
   const distToOpen = Math.abs(cur - sheetSnap.open);
   const distToClosed = Math.abs(cur - sheetSnap.closed);
@@ -1360,8 +1377,9 @@ refreshBtn.addEventListener("click", fetchIncidents);
 minSeveritySel.addEventListener("change", () => { render(); renderOverview(); refreshRouteRiskOnly(); });
 minutesWindowInp.addEventListener("change", () => { render(); renderOverview(); refreshRouteRiskOnly(); });
 
+// ✅ recenter to initial view (whatever it is)
 recenterBtn.addEventListener("click", () => {
-  map.setView(RUTGERS_CENTER, RUTGERS_ZOOM, { animate: true });
+  map.setView(initialCenter, initialZoom, { animate: true });
 });
 
 // ===================== SAFETY ROUTE MODE =====================
@@ -1633,15 +1651,11 @@ function refreshRouteRiskOnly(){
   renderRouteResults();
 }
 
-// map clicks for routing
+// map clicks for routing (✅ no campus restriction)
 map.on("click", (e) => {
   if (!routingMode) return;
 
   const latlng = e.latlng;
-  if (!campusBounds.contains(latlng)){
-    routeHint.innerHTML = `<span style="color:rgba(255,204,51,.92)">Pick a point inside the campus bounds.</span>`;
-    return;
-  }
 
   if (routingMode === "start") ensureMarker("start", latlng);
   else ensureMarker("dest", latlng);
